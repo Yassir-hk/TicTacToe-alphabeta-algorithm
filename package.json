@@ -1,0 +1,14 @@
+{
+  "name": "tic-tac-toe-ai",
+  "version": "1.0.0",
+  "description": "Implementation of minimax & alpha-beta prunning to play tic-tac-toe",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yassir-hk",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
