@@ -14,122 +14,85 @@ function areEqual(values) {
 
 // Check if the move is valid or not
 export function isValidMove(row, col, boardState) {
-  return row >= 0 && row <= 2 && col >= 0 && col <= 2 && boardState[row][col] === '.';
+  return row >= 0 && row < 3 && col >= 0 && col < 3 && boardState[row][col] === '.';
 }
 
 // Function to check if the game ended, if yes it will return the winner
 export function isGameEnded(boardState) {
-  for (let i = 0; i < 3; ++i) { 
-    if (boardState[i][0] !== '.' && areEqual([boardState[i][0], boardState[i][1], boardState[i][2]])) {
-      return boardState[i][0];
-    }
-  }
   for (let i = 0; i < 3; ++i) {
-    if (boardState[0][i] !== '.' && areEqual([boardState[0][i], boardState[1][i], boardState[2][i]])) {
-      return boardState[0][i];
-    }
+    if (boardState[i][0] !== '.' && areEqual([boardState[i][0], boardState[i][1], boardState[i][2]])) return boardState[i][0];
+    if (boardState[0][i] !== '.' && areEqual([boardState[0][i], boardState[1][i], boardState[2][i]])) return boardState[0][i];
   }
-  if (boardState[0][0] !== '.' && areEqual([boardState[0][0], boardState[1][1], boardState[2][2]])) return boardState[1][1];
-  if (boardState[0][2] !== '.' && areEqual([boardState[0][2], boardState[1][1], boardState[2][0]])) return boardState[1][1];
+  const diagonalOne = areEqual([boardState[0][0], boardState[1][1], boardState[2][2]]);
+  const diagonalTwo = areEqual([boardState[0][2], boardState[1][1], boardState[2][0]]);
+  if (boardState[1][1] !== '.' && (diagonalOne || diagonalTwo)) return boardState[1][1];
   for (let i = 0; i < 3; ++i) {
     for (let j = 0; j < 3; ++j) {
-      if (boardState[i][j] === '.') {
-        return false;
-      }
+      if (boardState[i][j] === '.') return false;
     }
   }
   return '.';
 }
 
-// Max players move (minimax algorithm)
-export function maxMove(boardState) {
+// Helper function to initialize some variables that will be used in the minimax algorithm
+export function initialize(player) {
+  const value = player === 'max' ? 'x' : 'o';
+  const opponent = player === 'max' ? 'min' : 'max';
+  let bestUtility = player === 'max' ? -2 : 2;
+  return [value, opponent, bestUtility];
+}
+
+// Implementation of minimax algorithm, this function return the best move for the corresponding player
+export function minimax(boardState, player) {
   const result = isGameEnded(boardState);
   if (result !== false) return utilities[result];
 
-  let utility = -2, row = 0, col = 0;
+  let [value, opponent, bestUtility] = initialize(player);
+  let row = 0, col = 0;
+  
   for (let i = 0; i < 3; ++i) {
     for (let j = 0; j < 3; ++j) {
       if (isValidMove(i, j, boardState)) {
-        boardState[i][j] = 'x';
-        const minUtility = minMove(boardState)[2];
-        if (minUtility > utility) {
-          utility = minUtility;
+        boardState[i][j] = value;
+        const utility = minimax(boardState, opponent)[2];
+        boardState[i][j] = '.';
+
+        if ((player === 'max' && utility > bestUtility) || (player === 'min' && utility < bestUtility)) {
+          bestUtility = utility;
           [row, col] = [i, j];
         }
-        boardState[i][j] = '.';
       }
     }
   }
-  return [row, col, utility];
+  return [row, col, bestUtility];
 }
 
-// Min players move (minimax algorithm)
-export function minMove(boardState) {
+// Alpha beta implementation to prun the minimax algorithm
+export function alphabeta(boardState, alpha, beta, player) {
   const result = isGameEnded(boardState);
   if (result !== false) return utilities[result];
 
-  let utility = 2, row = 0, col = 0;
+  let [value, opponent, bestUtility] = initialize(player);
+  let row = 0, col = 0;
+  
   for (let i = 0; i < 3; ++i) {
     for (let j = 0; j < 3; ++j) {
       if (isValidMove(i, j, boardState)) {
-        boardState[i][j] = 'o';
-        const maxUtility = maxMove(boardState)[2];
-        if (maxUtility < utility) {
-          [row, col, utility] = [i, j, maxUtility];
-        }
+        boardState[i][j] = value;
+        const utility = alphabeta(boardState, alpha, beta, opponent)[2];
         boardState[i][j] = '.';
+        
+        if ((player === 'max' && utility > bestUtility) || (player === 'min' && utility < bestUtility)) {
+          bestUtility = utility;
+          [row, col] = [i, j];
+        }
+        if ((player === 'max' && bestUtility >= beta) || (player === 'min' && bestUtility <= alpha)) {
+          return [row, col, bestUtility];
+        }
+        if (player === 'min') beta = Math.min(beta, bestUtility);
+        if (player === 'max') alpha = Math.max(alpha, bestUtility);
       }
     }
   }
-  return [row, col, utility];
-}
-
-// Max player move with alpha-beta prunning
-export function maxAlphaBetaMove(boardState, alpha = -2, beta = 2) {
-  const result = isGameEnded(boardState);
-  if (result !== false) return utilities[result];
-
-  let utility = -2, row = 0, col = 0;
-  for (let i = 0; i < 3; ++i) {
-    for (let j = 0; j < 3; ++j) {
-      if (isValidMove(i, j, boardState)) {
-        boardState[i][j] = 'x';
-        const minUtility = minAlphaBetaMove(boardState, alpha, beta)[2];
-        if (minUtility > utility) {
-          [row, col, utility] = [i, j, minUtility];
-        }
-        boardState[i][j] = '.';
-        if (utility >= beta) {
-          return [row, col, utility];
-        }
-        alpha = Math.max(utility, alpha);
-      }
-    }
-  }
-  return [row, col, utility];
-}
-
-// Min players move with alpha-beta prunning
-export function minAlphaBetaMove(boardState, alpha = -2, beta = 2) {
-  const result = isGameEnded(boardState);
-  if (result !== false) return utilities[result];
-
-  let utility = 2, row = 0, col = 0;
-  for (let i = 0; i < 3; ++i) {
-    for (let j = 0; j < 3; ++j) {
-      if (isValidMove(i, j, boardState)) {
-        boardState[i][j] = 'o';
-        const maxUtility = maxAlphaBetaMove(boardState, alpha, beta)[2];
-        if (maxUtility < utility) {
-          [row, col, utility] = [i, j, maxUtility];
-        }
-        boardState[i][j] = '.';
-        if (utility <= alpha) {
-          return [row, col, utility];
-        }
-        beta = Math.min(utility, beta);
-      }
-    }
-  }
-  return [row, col, utility];
+  return [row, col, bestUtility];
 }

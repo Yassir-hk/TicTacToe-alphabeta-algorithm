@@ -1,4 +1,4 @@
-import { isGameEnded, minMove, isValidMove, minAlphaBetaMove } from './Algorithms.mjs';
+import { isGameEnded, isValidMove, alphabeta, minimax } from './Algorithms.mjs';
 
 const boardElement = document.getElementById('board');
 const boardState = [
@@ -19,7 +19,7 @@ function play() {
       alert("Tie");
     }
   } else if (playerTurn === 'o') {
-    const [row, col, utility] = minAlphaBetaMove(boardState);
+    const [row, col, utility] = alphabeta(boardState, -2, 2, 'min');
     if (isValidMove(row, col, boardState)) {
       boardState[row][col] = 'o';
       playerTurn = 'x';
