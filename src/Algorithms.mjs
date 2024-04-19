@@ -4,7 +4,7 @@ const utilities = {
   '.': [0, 0, 0],
 };
 
-// Chack if all values are equal
+// Helper function to check if all values are equal
 function areEqual(values) {
   for (let i = 1; i < values.length; ++i) {
     if (values[i] !== values[i - 1]) return false;
@@ -12,7 +12,14 @@ function areEqual(values) {
   return true;
 }
 
-// Check if the move is valid or not
+// Helper function to initialize some variables that will be used in the minimax algorithm
+function initialize(player) {
+  const value = player === 'max' ? 'x' : 'o';
+  const opponent = player === 'max' ? 'min' : 'max';
+  let bestUtility = player === 'max' ? -2 : 2;
+  return [value, opponent, bestUtility];
+}
+
 export function isValidMove(row, col, boardState) {
   return row >= 0 && row < 3 && col >= 0 && col < 3 && boardState[row][col] === '.';
 }
@@ -34,14 +41,6 @@ export function isGameEnded(boardState) {
   return '.';
 }
 
-// Helper function to initialize some variables that will be used in the minimax algorithm
-export function initialize(player) {
-  const value = player === 'max' ? 'x' : 'o';
-  const opponent = player === 'max' ? 'min' : 'max';
-  let bestUtility = player === 'max' ? -2 : 2;
-  return [value, opponent, bestUtility];
-}
-
 // Implementation of minimax algorithm, this function return the best move for the corresponding player
 export function minimax(boardState, player) {
   const result = isGameEnded(boardState);
@@ -58,8 +57,7 @@ export function minimax(boardState, player) {
         boardState[i][j] = '.';
 
         if ((player === 'max' && utility > bestUtility) || (player === 'min' && utility < bestUtility)) {
-          bestUtility = utility;
-          [row, col] = [i, j];
+          [row, col, bestUtility] = [i, j, utility];
         }
       }
     }
@@ -83,8 +81,7 @@ export function alphabeta(boardState, alpha, beta, player) {
         boardState[i][j] = '.';
         
         if ((player === 'max' && utility > bestUtility) || (player === 'min' && utility < bestUtility)) {
-          bestUtility = utility;
-          [row, col] = [i, j];
+          [row, col, bestUtility] = [i, j, utility];
         }
         if ((player === 'max' && bestUtility >= beta) || (player === 'min' && bestUtility <= alpha)) {
           return [row, col, bestUtility];
