@@ -1,4 +1,4 @@
-import { isGameEnded, isValidMove, alphabeta, minimax } from './Algorithms.mjs';
+import { isGameEnded, isValidMove, alphabeta, minimax } from './algorithms.mjs';
 
 const boardElement = document.getElementById('board');
 const boardState = [
