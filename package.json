@@ -9,6 +9,7 @@
   "author": "Yassir-hk",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "mime-types": "^2.1.35"
   }
 }
