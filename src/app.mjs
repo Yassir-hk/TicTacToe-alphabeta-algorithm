@@ -1,4 +1,4 @@
-import { isGameEnded, isValidMove, alphabeta, minimax } from './algorithms.mjs';
+import { isGameEnded, isValidMove, alphabeta } from './algorithms.mjs';
 
 const boardElement = document.getElementById('board');
 const popupElement = document.getElementById('popup');
@@ -8,16 +8,19 @@ const boardState = [
   ['.', '.', '.'],
   ['.', '.', '.'],
 ];
-let turn = 'x';
 let playerTurn;
+let turn = 'x';
 
 function gameResult(result) {
-  if (result === 'x') {
-    messgElement.innerHTML = "Result: Player 'x' wins the game"
-  } else if (result === 'o') {
-    messgElement.innerHTML = "Result: Player 'o' wins the game";
-  } else if (result === '.') {
-    messgElement.innerHTML = "Result: Tie";
+  switch (result) {
+    case 'x':
+      messgElement.innerHTML = "Result: Player 'x' wins the game";
+      break;
+    case 'o':
+      messgElement.innerHTML = "Result: Player 'o' wins the game";
+      break;
+    case '.':
+      messgElement.innerHTML = "Result: Tie";
   }
   popupElement.style.display = "block";
 }
@@ -25,22 +28,11 @@ function gameResult(result) {
 function play() {
   const result = isGameEnded(boardState);
   if (result !== false) return gameResult(result);
-
-  if (turn === 'o' && playerTurn === 'x') {
-    const [row, col, utility] = alphabeta(boardState, -2, 2, 'min');
+  if (turn !== playerTurn) {
+    const [row, col, utility] = alphabeta(boardState, -2, 2, turn === 'o' ? 'min' : 'max');
     if (isValidMove(row, col, boardState)) {
-      boardState[row][col] = 'o';
-      turn = 'x';
-      updateBoard();
-      play();
-    } else {
-      alert('Invalid move');
-    }
-  } else if (turn === 'x' && playerTurn === 'o') {
-    const [row, col, utility] = alphabeta(boardState, -2, 2, 'max');
-    if (isValidMove(row, col, boardState)) {
-      boardState[row][col] = 'x';
-      turn = 'o';
+      boardState[row][col] = turn;
+      turn = playerTurn;
       updateBoard();
       play();
     } else {

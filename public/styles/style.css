@@ -45,8 +45,8 @@ section {
 /* Popup style */
 
 #popup {
-  width: 300px;
-  height: 200px;
+  width: 350px;
+  height: auto;
   display: none;
   position: absolute;
   top: 50%;
@@ -55,17 +55,28 @@ section {
   transform: translate(-50%, -50%);
   background-color: white;
   padding: 20px;
-  border: 2px solid black;
+  border: 1px solid black;
   border-radius: 10px;
   z-index: 9999;
+  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.3);
 }
 
-#popup .button {
+.button {
   padding: 10px 20px;
-  margin: 10px;
+  margin-bottom: 20px;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 10px;
   border: 1px solid black;
+}
+
+.x-button {
+  margin-right: 20px;
+  background-color: rgba(42, 116, 165, 0.6);
+}
+
+.o-button {
+  margin-left: 20px;
+  background-color: rgba(165, 42, 42, 0.6);
 }
 
 #popup p {
@@ -74,5 +85,5 @@ section {
 
 #messg {
   font-size: large;
-  color: brown;
+  color: rgb(42, 116, 165);
 }
