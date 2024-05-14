@@ -47,8 +47,6 @@ function updateBoard() {
       const squareElement = document.getElementById(`${row}-${col}`);
       const value = boardState[row][col];
       squareElement.textContent = value === '.' ? '' : value;
-      squareElement.classList.toggle('x', value === 'x');
-      squareElement.classList.toggle('o', value === 'o');
     }
   }
 }
